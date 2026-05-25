@@ -14,6 +14,12 @@ class RoomTypeController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'type_name' => 'required',
+            'price' => 'required',
+            'capacity' => 'required'
+        ]);
+
         $roomType = RoomType::create($request->all());
 
         return response()->json([
@@ -24,12 +30,32 @@ class RoomTypeController extends Controller
 
     public function show(string $id)
     {
-        return response()->json(RoomType::findOrFail($id));
+        $roomType = RoomType::find($id);
+
+        if (!$roomType) {
+            return response()->json([
+                'message' => 'Room type tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json($roomType);
     }
 
     public function update(Request $request, string $id)
     {
-        $roomType = RoomType::findOrFail($id);
+        $roomType = RoomType::find($id);
+
+        if (!$roomType) {
+            return response()->json([
+                'message' => 'Room type tidak ditemukan'
+            ], 404);
+        }
+
+        $request->validate([
+            'type_name' => 'required',
+            'price' => 'required',
+            'capacity' => 'required'
+        ]);
 
         $roomType->update($request->all());
 
@@ -41,10 +67,29 @@ class RoomTypeController extends Controller
 
     public function destroy(string $id)
     {
-        RoomType::destroy($id);
+        $roomType = RoomType::find($id);
 
-        return response()->json([
-            'message' => 'Room type berhasil dihapus'
-        ]);
+        if (!$roomType) {
+            return response()->json([
+                'message' => 'Room type tidak ditemukan'
+            ], 404);
+        }
+
+        try {
+
+            $roomType->delete();
+
+            return response()->json([
+                'message' => 'Room type berhasil dihapus'
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Room type masih digunakan pada tabel rooms',
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
     }
 }

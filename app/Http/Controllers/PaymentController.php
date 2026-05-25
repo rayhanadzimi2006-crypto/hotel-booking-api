@@ -16,6 +16,13 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'booking_id' => 'required',
+            'payment_date' => 'required',
+            'amount' => 'required',
+            'payment_method' => 'required'
+        ]);
+
         $payment = Payment::create($request->all());
 
         return response()->json([
@@ -26,14 +33,33 @@ class PaymentController extends Controller
 
     public function show(string $id)
     {
-        return response()->json(
-            Payment::with('booking')->findOrFail($id)
-        );
+        $payment = Payment::with('booking')->find($id);
+
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Payment tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json($payment);
     }
 
     public function update(Request $request, string $id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = Payment::find($id);
+
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Payment tidak ditemukan'
+            ], 404);
+        }
+
+        $request->validate([
+            'booking_id' => 'required',
+            'payment_date' => 'required',
+            'amount' => 'required',
+            'payment_method' => 'required'
+        ]);
 
         $payment->update($request->all());
 
@@ -45,10 +71,29 @@ class PaymentController extends Controller
 
     public function destroy(string $id)
     {
-        Payment::destroy($id);
+        $payment = Payment::find($id);
 
-        return response()->json([
-            'message' => 'Payment berhasil dihapus'
-        ]);
+        if (!$payment) {
+            return response()->json([
+                'message' => 'Payment tidak ditemukan'
+            ], 404);
+        }
+
+        try {
+
+            $payment->delete();
+
+            return response()->json([
+                'message' => 'Payment berhasil dihapus'
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Payment gagal dihapus',
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
     }
 }

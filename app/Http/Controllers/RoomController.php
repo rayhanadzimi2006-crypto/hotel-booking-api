@@ -16,6 +16,12 @@ class RoomController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'room_number' => 'required',
+            'room_type_id' => 'required',
+            'status' => 'required'
+        ]);
+
         $room = Room::create($request->all());
 
         return response()->json([
@@ -26,14 +32,32 @@ class RoomController extends Controller
 
     public function show(string $id)
     {
-        return response()->json(
-            Room::with('roomType')->findOrFail($id)
-        );
+        $room = Room::with('roomType')->find($id);
+
+        if (!$room) {
+            return response()->json([
+                'message' => 'Room tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json($room);
     }
 
     public function update(Request $request, string $id)
     {
-        $room = Room::findOrFail($id);
+        $room = Room::find($id);
+
+        if (!$room) {
+            return response()->json([
+                'message' => 'Room tidak ditemukan'
+            ], 404);
+        }
+
+        $request->validate([
+            'room_number' => 'required',
+            'room_type_id' => 'required',
+            'status' => 'required'
+        ]);
 
         $room->update($request->all());
 
@@ -45,10 +69,29 @@ class RoomController extends Controller
 
     public function destroy(string $id)
     {
-        Room::destroy($id);
+        $room = Room::find($id);
 
-        return response()->json([
-            'message' => 'Room berhasil dihapus'
-        ]);
+        if (!$room) {
+            return response()->json([
+                'message' => 'Room tidak ditemukan'
+            ], 404);
+        }
+
+        try {
+
+            $room->delete();
+
+            return response()->json([
+                'message' => 'Room berhasil dihapus'
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Room masih digunakan pada tabel bookings',
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
     }
 }
