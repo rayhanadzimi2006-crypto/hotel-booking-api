@@ -1,11 +1,12 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // GANTI BARIS DI BAWAH INI:
-  baseURL: 'http://127.0.0', 
+  // HAPUS kata /api di bagian paling belakang, sisakan seperti ini saja:
+  baseURL: 'http://127.0.0.1:8000', 
 });
 
 export default api;
+
 
 // Interceptor untuk menambahkan token ke setiap request
 api.interceptors.request.use(
