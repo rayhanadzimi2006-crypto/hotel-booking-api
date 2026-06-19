@@ -17,5 +17,13 @@ Route::apiResource('payments', PaymentController::class);
 Route::get('statistics', [DashboardController::class, 'statistics']);
 Route::get('statistics/monthly', [DashboardController::class, 'monthlyStatistics']);
 Route::get('statistics/yearly', [DashboardController::class, 'yearlyStatistics']);
+
+// Auth routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/customer/login', [AuthController::class, 'customerLogin']);
+Route::post('/customer/register', [AuthController::class, 'customerRegister']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+// Booking status update
+Route::patch('/bookings/{id}/status', [BookingController::class, 'updateStatus']);
+Route::post('/bookings/{id}/checkout', [BookingController::class, 'checkout']);
