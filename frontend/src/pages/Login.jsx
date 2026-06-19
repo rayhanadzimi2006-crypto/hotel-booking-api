@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
+import axios from 'axios';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -23,7 +25,8 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const response = await api.post('/login', { email, password });
+      // Ganti port 5000 & rute /api/login sesuai dengan backend asli Anda
+      const response = await axios.post('http://localhost:5000/api/login', { email, password });
       const { token, user } = response.data;
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
