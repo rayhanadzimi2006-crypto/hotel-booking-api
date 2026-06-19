@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+// Use environment variable or fallback to localhost for development
+const baseURL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 const api = axios.create({
-  // Gunakan IP 127.0.0.1 dan pastikan ditutup dengan /api
-  baseURL: 'http://127.0.0', 
+  baseURL: baseURL,
 });
 
 
