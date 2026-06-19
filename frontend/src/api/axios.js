@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
+  // GANTI BARIS DI BAWAH INI:
+  baseURL: 'http://127.0.0', 
 });
+
+export default api;
 
 // Interceptor untuk menambahkan token ke setiap request
 api.interceptors.request.use(
